@@ -15,8 +15,8 @@ jobs:
         node-version: 18
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    - name: Install Chromium
+      run: npx playwright install --with-deps chromium
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v3
@@ -25,10 +25,15 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 5
+
+    - name: Move trace.zip to root directory
+      run: mv test-results/**/trace.zip trace.zip
+
     - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: trace
-        path: test-results/**/trace.zip
+        path: trace.zip
         retention-days: 5
+
 
