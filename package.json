@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test --headed --reporter=blob",
-    "merge-reports": "npx playwright merge-reports --reporter html ./blob-report"
+    "test": "npx playwright test"
   },
   "keywords": [],
   "author": "",
