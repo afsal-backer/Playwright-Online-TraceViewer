@@ -26,11 +26,7 @@ jobs:
           path: playwright-report/
           retention-days: 5
       - name: Debug Output
-        run: |
-            echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}"
-            echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
-            echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
+        run: echo "AWS_ACCESS_KEY_ID"
       - uses: shallwefootball/s3-upload-action@master
         name: Upload to S3
         id: S3
