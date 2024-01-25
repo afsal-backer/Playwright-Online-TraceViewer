@@ -25,10 +25,9 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 5
-      - name: Debug Output
-        run: echo "AWS_ACCESS_KEY_ID"
-      - uses: shallwefootball/s3-upload-action@master
-        name: Upload to S3
+      - name: Upload to S3
+        uses: shallwefootball/s3-upload-action@master
+        if: always()
         id: S3
         with:
           aws_key_id: ${{secrets.AWS_ACCESS_KEY}}
