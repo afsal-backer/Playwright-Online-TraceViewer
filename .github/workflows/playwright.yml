@@ -53,9 +53,9 @@ jobs:
       - name: Set S3 URL
         if: always()
         id: set-s3-url
-        run: echo "::set-output name=s3_url::https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
+        run: echo "S3_URL=https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html" >> $GITHUB_ENV
         
       - name: Display S3 URL
         if: always()
         run: |
-          echo "S3 URL: ${{ steps.set-s3-url.outputs.s3_url }}"
+         echo "S3 URL: $S3_URL"
