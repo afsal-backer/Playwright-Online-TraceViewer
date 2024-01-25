@@ -24,10 +24,12 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test
 
-    - name: Download merged HTML
+    - uses: actions/download-artifact@v3
+
+    - name: Download sturcture of downloaded files
       run: ls -R
     
-    - name: Download Merge HTML
+    - name: Install Report Merger
       run: npm install playwright-merge-html-reports --dev
 
     - name: Merger reports
@@ -35,6 +37,13 @@ jobs:
 
     - name: Display structure of merged report
       run: ls -R
+
+    - name: Upload Blob report
+      uses: actions/upload-artifact@v3
+      with:
+        name: Blob report
+        path: blob-report
+        retention-days: 1
 
     - name: Upload HTML report
       uses: actions/upload-artifact@v3
