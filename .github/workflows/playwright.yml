@@ -24,19 +24,12 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test
 
-    - name: Install Report Merger
-      run: npm install playwright-merge-html-reports --dev
-
-    - name: Merger reports
-      run: npx playwright merge-reports --reporter html ./blob-report
-
-    - name: Upload Blob report
-      uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: Blob report
-        path: blob-report
-        retention-days: 1
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 5
 
 
 
