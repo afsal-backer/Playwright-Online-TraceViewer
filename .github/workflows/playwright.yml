@@ -45,17 +45,14 @@ jobs:
         run: |
           ls -la playwright-report/
           aws s3 cp playwright-report/. s3://playwright-trace --recursive
-  link:
-    runs-on: ubuntu-latest
-    container:
-      image: alpine:latest
-    steps:  
-      - name: Set S3 URL
-        if: always()
-        id: set-s3-url
-        run: echo "S3_URL=https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html" >> $GITHUB_ENV
-        
-      - name: Display S3 URL
+
+      - name: Create URL file
         if: always()
         run: |
-         echo "S3 URL: $S3_URL"
+            echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html" > url.txt
+    
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s3-url
+          path: url.txt
