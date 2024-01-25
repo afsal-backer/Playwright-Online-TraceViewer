@@ -53,4 +53,4 @@ jobs:
 
       - name: Setup Job Summary
         if: always()
-        run: echo "### Playwright Report\n\n🔗 [View the Playwright Report](https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
+        run: echo "### Playwright Report 🔗 [View Playwright Report](https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
