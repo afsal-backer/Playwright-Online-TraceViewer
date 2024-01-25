@@ -52,3 +52,4 @@ jobs:
         if: always()
         run: |
             echo "::error file=playwright.yml,line=20::https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
+            
