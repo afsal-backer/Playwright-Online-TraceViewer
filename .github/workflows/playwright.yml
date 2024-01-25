@@ -30,6 +30,8 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
+      - name: Show env
+        run: echo "${{ env.AWS_REGION }}"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         if: always()
@@ -52,4 +54,3 @@ jobs:
         if: always()
         run: |
             echo "::error file=playwright.yml,line=20::https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
-            
