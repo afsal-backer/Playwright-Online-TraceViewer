@@ -45,10 +45,18 @@ jobs:
         run: |
           ls -la playwright-report/
           aws s3 cp playwright-report/. s3://playwright-trace --recursive
+  link:
+    runs-on: ubuntu-latest
+    needs: test
+    container:
+      image: alpine:latest
+    steps:  
       - name: Set S3 URL
         if: always()
-        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
+        id: set-s3-url
+        run: echo "::set-output name=s3_url::https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
+        
       - name: Display S3 URL
         if: always()
         run: |
-            echo "::error https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
+          echo "S3 URL: ${{ steps.set-s3-url.outputs.s3_url }}"
