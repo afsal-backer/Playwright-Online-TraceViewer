@@ -30,24 +30,21 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
-      - name: Show env
-        if: always()
-        run: echo "${{ env.AWS_REGION }}"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         if: always()
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: eu-west-2
       - name: Empty S3 Bucket
         if: always()
-        run: aws s3 rm s3://${{ env.AWS_S3_BUCKET }} --recursive
+        run: aws s3 rm s3://playwright-trace --recursive
       - name: Upload to S3 bucket
         id: S3
         if: always()
         run: |
           ls -la playwright-report/
-          aws s3 cp playwright-report/. s3://${{ env.AWS_S3_BUCKET }} --recursive
+          aws s3 cp playwright-report/. s3://playwright-trace --recursive
       - name: Set S3 URL
         if: always()
         run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
