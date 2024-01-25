@@ -31,6 +31,7 @@ jobs:
           path: playwright-report/
           retention-days: 1
       - name: Show env
+        if: always()
         run: echo "${{ env.AWS_REGION }}"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
