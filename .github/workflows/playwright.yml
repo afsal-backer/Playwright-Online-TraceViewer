@@ -50,24 +50,6 @@ jobs:
         if: always()
         run: |
             echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html" > url.txt
-    
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: s3-url
-          path: url.txt
 
-      - name: Post URL as comment
-        if: always()
-        uses: actions/github-script@v7
-        with:
-            script: |
-              const issue_number = context.issue.number;
-              const url = 'https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html';
-              const message = `🔗 [Playwright Trace Results](${url})`;
-              github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue_number,
-                body: message
-              });
+      - name: Setup Job Summary
+        run: echo "### Playwright Report\n\n🔗 [View the Playwright Report](https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
