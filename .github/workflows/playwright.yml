@@ -39,6 +39,7 @@ jobs:
 
     - name: Upload Blob report
       uses: actions/upload-artifact@v3
+      if: always()
       with:
         name: Blob report
         path: blob-report

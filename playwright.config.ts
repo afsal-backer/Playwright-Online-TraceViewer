@@ -6,7 +6,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   workers: process.env.CI ? 1 : undefined,
-  reporter: process.env.CI ? 'blob' : 'html',
+  reporter: 'html',
+  //reporter: process.env.CI ? 'blob' : 'html',
   use: {
      baseURL: 'https://todolist.james.am/#/',
      trace: 'retain-on-failure',
