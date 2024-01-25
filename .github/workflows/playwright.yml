@@ -47,7 +47,6 @@ jobs:
           aws s3 cp playwright-report/. s3://playwright-trace --recursive
   link:
     runs-on: ubuntu-latest
-    needs: test
     container:
       image: alpine:latest
     steps:  
