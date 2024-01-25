@@ -4,6 +4,11 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   test:
     timeout-minutes: 60
