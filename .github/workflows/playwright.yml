@@ -56,3 +56,18 @@ jobs:
         with:
           name: s3-url
           path: url.txt
+
+      - name: Post URL as comment
+        if: always()
+        uses: actions/github-script@v5
+        with:
+            script: |
+              const issue_number = context.issue.number;
+              const url = 'https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html';
+              const message = `🔗 [Playwright Trace Results](${url})`;
+              github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                body: message
+              });
