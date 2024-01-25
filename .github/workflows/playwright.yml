@@ -35,23 +35,20 @@ jobs:
         if: always()
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
       - name: Empty S3 Bucket
         if: always()
-        run: aws s3 rm s3://${{ secrets.AWS_S3_BUCKET }} --recursive
+        run: aws s3 rm s3://${{ env.AWS_S3_BUCKET }} --recursive
       - name: Upload to S3 bucket
+        id: S3
         if: always()
         run: |
           ls -la playwright-report/
-          object_key=$(date +"%Y%m%d%H%M%S")
-          aws s3 cp playwright-report/. s3://${{ secrets.AWS_S3_BUCKET }}/${object_key}/ --recursive
-          echo "::set-output name=object_key::${object_key}"
+          aws s3 cp playwright-report/. s3://${{ env.AWS_S3_BUCKET }} --recursive
       - name: Set S3 URL
         if: always()
-        id: set_s3_url
-        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.Upload.outputs.object_key }}/index.html"
+        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
       - name: Display S3 URL
         if: always()
         run: |
-            echo "S3 URL: ${{ steps.set_s3_url.outputs.S3_URL }}"
-            echo "::error file=playwright.yml,line=20::S3 URL: ${{ steps.set_s3_url.outputs.S3_URL }}"
+            echo "::error file=playwright.yml,line=20::https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
