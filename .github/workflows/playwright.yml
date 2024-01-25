@@ -50,6 +50,8 @@ jobs:
         if: always()
         id: set_s3_url
         run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.Upload.outputs.object_key }}/index.html"
-      - name: Link to report
+      - name: Display S3 URL
         if: always()
-        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{steps.S3.outputs.object_key}}/index.html"
+        run: |
+            echo "S3 URL: ${{ steps.set_s3_url.outputs.S3_URL }}"
+            echo "::error file=playwright.yml,line=20::S3 URL: ${{ steps.set_s3_url.outputs.S3_URL }}"
