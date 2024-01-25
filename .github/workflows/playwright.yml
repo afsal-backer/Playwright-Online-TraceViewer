@@ -22,10 +22,8 @@ jobs:
       run: npx playwright install --with-deps chromium
 
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --reporter=blob
 
-    - uses: actions/download-artifact@v3
-    
     - name: Install Report Merger
       run: npm install playwright-merge-html-reports --dev
 
