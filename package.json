@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test" : "npx playwright test --headed" 
+    "test": "npx playwright test --headed --reporter=blob",
+    "merge-reports": "npx playwright merge-reports --reporter html ./blob-report"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.40.1",
-    "@types/node": "^20.11.0"
+    "@types/node": "^20.11.6"
+  },
+  "dependencies": {
+    "playwright-merge-html-reports": "^0.2.8"
   }
 }

@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./",
+      "incremental": true
+    },
+    "include": ["**/*.ts", "**/*.js", "tsconfig.json", ".eslintrc.js"],
+    "exclude": ["node_modules"]
+  }
+  
