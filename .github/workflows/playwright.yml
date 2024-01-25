@@ -47,8 +47,8 @@ jobs:
           aws s3 cp playwright-report/. s3://playwright-trace --recursive
       - name: Set S3 URL
         if: always()
-        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
+        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
       - name: Display S3 URL
         if: always()
         run: |
-            echo "::error file=playwright.yml,line=20::https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.S3.outputs.object_key }}/index.html"
+            echo "::error https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html"
