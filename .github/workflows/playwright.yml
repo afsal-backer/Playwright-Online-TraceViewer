@@ -47,6 +47,7 @@ jobs:
           aws s3 cp playwright-report/. s3://${{ secrets.AWS_S3_BUCKET }}/${object_key}/ --recursive
           echo "::set-output name=object_key::${object_key}"
       - name: Set S3 URL
+        if: always()
         id: set_s3_url
         run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{ steps.Upload.outputs.object_key }}/index.html"
       - name: Link to report
