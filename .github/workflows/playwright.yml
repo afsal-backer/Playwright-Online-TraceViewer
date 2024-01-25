@@ -30,12 +30,6 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
-        if: always()
-        with:
-            name: build-artifacts
-            path: playwright-report/data/
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         if: always()
@@ -48,6 +42,8 @@ jobs:
       - name: Upload to S3 bucket
         if: always()
         run: |
-          ls -la playwright-report/data/
-          aws s3 cp playwright-report/data/. s3://${{ secrets.AWS_S3_BUCKET }} --recursive
-      
+          ls -la playwright-report/
+          aws s3 cp playwright-report/. s3://${{ secrets.AWS_S3_BUCKET }} --recursive
+      - name: Link to report
+        if: always()
+        run: echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/${{steps.S3.outputs.object_key}}/index.html"
