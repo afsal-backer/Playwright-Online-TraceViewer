@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,22 +40,22 @@ jobs:
         if: always()
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: eu-west-2
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Empty S3 Bucket
         if: always()
-        run: aws s3 rm s3://playwright-trace --recursive
+        run: aws s3 rm s3://${{ vars.AWS_S3_BUCKET }} --recursive
       - name: Upload to S3 bucket
         id: S3
         if: always()
         run: |
           ls -la playwright-report/
-          aws s3 cp playwright-report/. s3://playwright-trace --recursive
+          aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }} --recursive
 
       - name: Create URL file
         if: always()
         run: |
-            echo "https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html" > url.txt
+            echo "https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/index.html" > url.txt
 
       - name: Setup Job Summary
         if: always()
-        run: echo "### Playwright Report 🔗 [View Playwright Report](https://playwright-trace.s3.eu-west-2.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
+        run: echo "### Playwright Report 🔗 [View Playwright Report](https://${{ vars.AWS_S3_BUCKET }}.s3.e${{ vars.AWS_REGION }}.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
