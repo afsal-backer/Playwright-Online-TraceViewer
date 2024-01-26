@@ -12,8 +12,5 @@
   "devDependencies": {
     "@playwright/test": "^1.40.1",
     "@types/node": "^20.11.6"
-  },
-  "dependencies": {
-    "playwright-merge-html-reports": "^0.2.8"
   }
 }
