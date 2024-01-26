@@ -52,33 +52,19 @@ jobs:
             echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
             aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
 
-      - name: Generate Pre-Signed URLs
-        if: always()
+      - name: Generate Pre-Signed URL for index.html
         run: |
-                  echo "" > presigned-urls.txt
-                  for file in $(aws s3 ls "s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}" --recursive | awk '{print $4}')
-                  do
-                    presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}/$file" --expires-in 3600)
-                    echo "$file: $presigned_url" >> presigned-urls.txt
-                  done
+                  index_file="${{ env.REPORT_DIR }}/index.html"
+                  presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 3600)
+                  echo "Pre-Signed URL for index.html: $presigned_url"
+                  echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
           
       - name: Create URL file
-        if: always()
         run: |
-                  while IFS= read -r line; do
-                    echo $line
-                  done < presigned-urls.txt
-                  cp presigned-urls.txt url.txt
+                  echo "${{ env.PRE_SIGNED_URL }}" > url.txt
           
       - name: Setup Job Summary
-        if: always()
         run: |
-                  echo "### Playwright Test Reports" >> $GITHUB_STEP_SUMMARY
-                  while IFS= read -r line; do
-                    filename=$(echo $line | awk '{print $1}')
-                    url=$(echo $line | awk '{print $2}')
-                    echo " 🔗 [$filename]($url)" >> $GITHUB_STEP_SUMMARY
-                  done < presigned-urls.txt
+                  echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
+                  echo " 🔗 [View Report](${{ env.PRE_SIGNED_URL }})" >> $GITHUB_STEP_SUMMARY
           
-                  https://playwright-trace.s3.eu-west-2.amazonaws.com/playwright-report-7667905211/playwright-report-7667905211/index.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=***%2F20240126%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20240126T121617Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=***&X-Amz-Signature=b8b63ab8fc5cd9c109bf121a36eb03f215209d5e019a55c1e829c5c66dabbe34
-                 
