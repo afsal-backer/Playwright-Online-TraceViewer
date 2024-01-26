@@ -18,10 +18,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4
@@ -30,32 +33,30 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
-      - name: Print AWS_REGION from repository environment variables
-        if: always()
-        run: |
-          echo "AWS_REGION: ${{ vars.AWS_REGION }}"
-          echo "AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET }}"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         if: always()
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-      - name: Empty S3 Bucket
-        if: always()
-        run: aws s3 rm s3://${{ vars.AWS_S3_BUCKET }} --recursive
+
       - name: Upload to S3 bucket
         id: S3
         if: always()
         run: |
-          ls -la playwright-report/
-          aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }} --recursive
-
+            REPORT_DIR=playwright-report-${{ github.run_id }}
+            aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
+  
       - name: Create URL file
         if: always()
         run: |
-            echo "https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/index.html" > url.txt
-
+            REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/$REPORT_DIR/index.html"
+            echo $REPORT_URL > url.txt
+            echo "Report URL: $REPORT_URL"
+  
       - name: Setup Job Summary
         if: always()
-        run: echo " 🔗 [View Playwright Report](https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
+        run: |
+            REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/$REPORT_DIR/index.html"
+            echo " 🔗 [View Playwright Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
