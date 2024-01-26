@@ -49,16 +49,29 @@ jobs:
         run: |
             echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
             aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
-  
+
+      - name: Generate Pre-Signed URLs
+        run: |
+                  echo "" > presigned-urls.txt
+                  for file in $(aws s3 ls "s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}" --recursive | awk '{print $4}')
+                  do
+                    presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}/$file" --expires-in 3600)
+                    echo "$file: $presigned_url" >> presigned-urls.txt
+                  done
+          
       - name: Create URL file
-        if: always()
         run: |
-            REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
-            echo $REPORT_URL > url.txt
-            echo "Report URL: $REPORT_URL"
-  
+                  while IFS= read -r line; do
+                    echo $line
+                  done < presigned-urls.txt
+                  cp presigned-urls.txt url.txt
+          
       - name: Setup Job Summary
-        if: always()
         run: |
-          REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
-          echo " 🔗 [View Playwright Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
+                  echo "### Playwright Test Reports" >> $GITHUB_STEP_SUMMARY
+                  while IFS= read -r line; do
+                    filename=$(echo $line | awk '{print $1}')
+                    url=$(echo $line | awk '{print $2}')
+                    echo " 🔗 [$filename]($url)" >> $GITHUB_STEP_SUMMARY
+                  done < presigned-urls.txt
+          
