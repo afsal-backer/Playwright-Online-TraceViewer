@@ -70,4 +70,3 @@ jobs:
         run: |
                   echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
                   echo " 🔗 [View Report](${{ env.PRE_SIGNED_URL }})" >> $GITHUB_STEP_SUMMARY
-          
