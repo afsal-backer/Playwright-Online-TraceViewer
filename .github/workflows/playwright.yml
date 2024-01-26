@@ -57,8 +57,8 @@ jobs:
         run: |
                   index_file="${{ env.REPORT_DIR }}/index.html"
                   presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 3600)
-                  echo "Pre-Signed URL for index.html: $presigned_url"
                   echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
+          
           
       - name: Create URL file
         if: always()
