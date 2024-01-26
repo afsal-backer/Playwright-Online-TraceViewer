@@ -58,4 +58,4 @@ jobs:
 
       - name: Setup Job Summary
         if: always()
-        run: echo "### Playwright Report 🔗 [View Playwright Report](https://${{ vars.AWS_S3_BUCKET }}.s3.e${{ vars.AWS_REGION }}.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
+        run: echo " 🔗 [View Playwright Report](https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/index.html)" >> $GITHUB_STEP_SUMMARY
