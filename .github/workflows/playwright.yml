@@ -30,6 +30,11 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
+      - name: Print AWS_REGION from repository environment variables
+        if: always()
+        run: |
+          echo "AWS_REGION: ${{ env.AWS_REGION }}"
+          echo "AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         if: always()
