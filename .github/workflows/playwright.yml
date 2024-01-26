@@ -51,6 +51,7 @@ jobs:
             aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
 
       - name: Generate Pre-Signed URLs
+        if: always()
         run: |
                   echo "" > presigned-urls.txt
                   for file in $(aws s3 ls "s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}" --recursive | awk '{print $4}')
@@ -60,6 +61,7 @@ jobs:
                   done
           
       - name: Create URL file
+        if: always()
         run: |
                   while IFS= read -r line; do
                     echo $line
@@ -67,6 +69,7 @@ jobs:
                   cp presigned-urls.txt url.txt
           
       - name: Setup Job Summary
+        if: always()
         run: |
                   echo "### Playwright Test Reports" >> $GITHUB_STEP_SUMMARY
                   while IFS= read -r line; do
