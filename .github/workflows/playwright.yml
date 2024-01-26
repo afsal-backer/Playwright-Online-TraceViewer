@@ -40,8 +40,6 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Upload to S3 bucket
         id: S3
@@ -51,23 +49,17 @@ jobs:
         run: |
             echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
             aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
-
-      - name: Generate Pre-Signed URL for index.html
-        if: always()
-        run: |
-                  index_file="${{ env.REPORT_DIR }}/index.html"
-                  presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 3600)
-                  echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
-          
-          
+  
       - name: Create URL file
         if: always()
         run: |
-                  echo "${{ env.PRE_SIGNED_URL }}" > url.txt
-          
+            REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
+            echo $REPORT_URL > url.txt
+            echo "Report URL: $REPORT_URL"
+  
       - name: Setup Job Summary
         if: always()
         run: |
-                  echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                  echo " 🔗 [View Report](${{ env.PRE_SIGNED_URL }})" >> $GITHUB_STEP_SUMMARY
+          REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
+          echo " 🔗 [View Playwright Report]($REPORT_URL)" >> $GITHUB_STEP_SUMMARY
         
