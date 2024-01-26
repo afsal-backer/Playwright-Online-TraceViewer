@@ -40,6 +40,8 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Upload to S3 bucket
         id: S3
@@ -78,3 +80,5 @@ jobs:
                     echo " 🔗 [$filename]($url)" >> $GITHUB_STEP_SUMMARY
                   done < presigned-urls.txt
           
+                  https://playwright-trace.s3.eu-west-2.amazonaws.com/playwright-report-7667905211/playwright-report-7667905211/index.html?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=***%2F20240126%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20240126T121617Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=***&X-Amz-Signature=b8b63ab8fc5cd9c109bf121a36eb03f215209d5e019a55c1e829c5c66dabbe34
+                 
