@@ -17,5 +17,18 @@ test.describe('Generate trace file', () => {
     await home.assertListItemVisibility("Fail my test", false);
 
   });  
+
+  test('Should add an item successfully and should not generate trace viewer file', async ({ page }) => {
+
+    const home = new HomePage(page);
+    
+    await page.goto('/');
+    await expect(home.headerText).toBeVisible(); 
+
+    await home.addToDoItem("Fail my test");
+    await page.keyboard.press('Enter');
+    await home.assertListItemVisibility("Fail my test", true);
+
+  });  
 });
 
