@@ -55,14 +55,14 @@ jobs:
       - name: Generate S3 PreSigned URL
         if: always()
         uses: anton-yurchenko/s3-pre-signed-url@v1
-        id: s3
+        id: sign
         with:
           access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           bucket: ${{ vars.AWS_S3_BUCKET }}
           path: $REPORT_DIR/index.html
         
-      - run: echo ${{ steps.s3.outputs.url }}
+      - run: echo ${{ steps.sign.outputs.url }}
           
       - name: Create URL file
         if: always()
