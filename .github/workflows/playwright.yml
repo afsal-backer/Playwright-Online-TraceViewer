@@ -52,13 +52,17 @@ jobs:
             echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
             aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
 
-      - name: Generate Pre-Signed URL for index.html
+      - name: Generate S3 PreSigned URL
         if: always()
-        run: |
-                  index_file="${{ env.REPORT_DIR }}/index.html"
-                  presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 3600)
-                  echo "Pre-Signed URL for index.html: $presigned_url"
-                  echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
+        uses: anton-yurchenko/s3-pre-signed-url@v1
+        id: s3
+        with:
+          access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          bucket: ${{ vars.AWS_S3_BUCKET }}
+          path: $REPORT_DIR/index.html
+        
+      - run: echo ${{ steps.s3.outputs.url }}
           
       - name: Create URL file
         if: always()
