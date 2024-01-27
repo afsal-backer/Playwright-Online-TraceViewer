@@ -59,6 +59,7 @@ jobs:
                     echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
 
       - name: Generate HTML with Pre-Signed URL
+        if: always()
                     run: |
                       echo "<html><body><a href='${{ env.PRE_SIGNED_URL }}'>View Report</a></body></html>" > report-link.html
             
