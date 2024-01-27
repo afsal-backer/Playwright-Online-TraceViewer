@@ -3,7 +3,6 @@ name: Playwright Tests
   push:
     branches:
       - main
-      - master
 
 permissions:
     id-token: write
@@ -44,7 +43,7 @@ jobs:
               echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
               aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
   
-      - name: Generate Pre-Signed URL for the
+      - name: Generate Pre-Signed URL for the Report
         if: always()
         run: |
               index_file="${{ env.REPORT_DIR }}/index.html"
