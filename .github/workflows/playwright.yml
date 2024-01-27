@@ -71,11 +71,11 @@ jobs:
               script: |
                       const commit_sha = context.sha;
                       const report_url = process.env.PRE_SIGNED_URL;
-                      const comment = `:sparkles: The report is available [here](${report_url}).`;
+                      const comment = `:sparkles: Open Playwright Report (${report_url}).`;
                       await github.rest.repos.createCommitComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
-                        commit_sha: commit_sha, // Ensure this is not empty
+                        commit_sha: commit_sha, 
                         body: comment
                       });
             
@@ -89,6 +89,6 @@ jobs:
       - name: Setup Job Summary
         if: always()
         run: |
-                    echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                    echo " 🔗 [View Report](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
+                    echo "### Playwright Report" >> $GITHUB_STEP_SUMMARY
+                    echo " 🔗 [Report added as a commit comment. View ==>](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
         
