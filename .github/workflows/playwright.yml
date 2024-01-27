@@ -58,20 +58,15 @@ jobs:
                     echo "Pre-Signed URL for index.html: $presigned_url"
                     echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
 
-      - name: Shorten Pre-Signed URL with Bitly
-        if: always()
-        env:
-            BITLY_TOKEN: ${{ secrets.BITLY_TOKEN }}
-            LONG_URL: ${{ env.PRE_SIGNED_URL }}
-        run: |
-            json_body=$(jq -n --arg url "$LONG_URL" '{"domain": "bit.ly", "long_url": $url}')
-            response=$(curl -X POST 'https://api-ssl.bitly.com/v4/shorten' \
-            -H "Authorization: Bearer ${BITLY_TOKEN}" \
-            -H 'Content-Type: application/json' \
-            -d "$json_body")
-            echo "Bitly Response: $response"
-            shortened_url=$(echo $response | jq -r .link)
-            echo "SHORTENED_URL=$shortened_url" >> $GITHUB_ENV
+      - name: Generate HTML with Pre-Signed URL
+                    run: |
+                      echo "<html><body><a href='${{ env.PRE_SIGNED_URL }}'>View Report</a></body></html>" > report-link.html
+            
+                  - name: Upload Report Link as Artifact
+                    uses: actions/upload-artifact@v2
+                    with:
+                      name: report-link
+                      path: report-link.html
             
             
       - name: Create URL file
