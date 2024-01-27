@@ -84,11 +84,11 @@ jobs:
       - name: Create URL file
         if: always()
         run: |
-                    echo "${{ env.SHORTENED_URL }}" > url.txt
+                    echo "${{ process.env.PRE_SIGNED_URL }}" > url.txt
             
       - name: Setup Job Summary
         if: always()
         run: |
                     echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                    echo " 🔗 [View Report](${{ env.SHORTENED_URL }})" >> $GITHUB_STEP_SUMMARY
+                    echo " 🔗 [View Report](${{ process.env.PRE_SIGNED_URL }})" >> $GITHUB_STEP_SUMMARY
         
