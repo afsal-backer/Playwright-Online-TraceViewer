@@ -3,7 +3,6 @@ name: Playwright Tests
   push:
     branches:
       - main
-      - master
 
 permissions:
     id-token: write
@@ -44,10 +43,10 @@ jobs:
       - name: Generate Pre-Signed URL for the
         if: always()
         run: |
-                    index_file="${{ env.REPORT_DIR }}/index.html"
-                    presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
-                    echo "Pre-Signed URL for index.html: $presigned_url"
-                    echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
+              index_file="${{ env.REPORT_DIR }}/index.html"
+              presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
+              echo "Pre-Signed URL for index.html: $presigned_url"
+              echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
             
       - name: Add Comment to Commit
         if: always()
@@ -68,13 +67,13 @@ jobs:
       - name: Construct Commit URL
         if: always()
         run: |
-                commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-                echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
+              commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+              echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
                     
             
       - name: Setup Job Summary
         if: always()
         run: |
-                    echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                    echo " 📮 [View commit comment for the report](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
+              echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
+              echo " 📮 [View commit comment for the report](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
         
