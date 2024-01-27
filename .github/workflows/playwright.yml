@@ -64,16 +64,14 @@ jobs:
             BITLY_TOKEN: ${{ secrets.BITLY_TOKEN }}
             LONG_URL: ${{ env.PRE_SIGNED_URL }}
         run: |
-              encoded_url=$(echo $LONG_URL | jq -sRr @uri)
-              echo "Encoded URL: $encoded_url" # Debugging line
-              json_body=$(jq -n --arg url "$encoded_url" '{"domain": "bit.ly", "long_url": $url}')
-              response=$(curl -X POST 'https://api-ssl.bitly.com/v4/shorten' \
-              -H "Authorization: Bearer ${BITLY_TOKEN}" \
-              -H 'Content-Type: application/json' \
-              -d "$json_body")
-              echo "Bitly Response: $response"
-              shortened_url=$(echo $response | jq -r .link)
-              echo "SHORTENED_URL=$shortened_url" >> $GITHUB_ENV
+            json_body=$(jq -n --arg url "$LONG_URL" '{"domain": "bit.ly", "long_url": $url}')
+            response=$(curl -X POST 'https://api-ssl.bitly.com/v4/shorten' \
+            -H "Authorization: Bearer ${BITLY_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d "$json_body")
+            echo "Bitly Response: $response"
+            shortened_url=$(echo $response | jq -r .link)
+            echo "SHORTENED_URL=$shortened_url" >> $GITHUB_ENV
             
             
       - name: Create URL file
