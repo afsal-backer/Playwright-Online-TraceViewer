@@ -65,7 +65,7 @@ jobs:
             
       - name: Add Comment to Commit
         if: always()
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
               github-token: ${{ secrets.G_TOKEN }}
               script: |
@@ -79,16 +79,16 @@ jobs:
                         body: comment
                       });
             
-            
-            
-      - name: Create URL file
+      - name: Construct Commit URL
         if: always()
         run: |
-                    echo "${{ env.PRE_SIGNED_URL }}" > url.txt
+                commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+                echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
+                    
             
       - name: Setup Job Summary
         if: always()
         run: |
                     echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                    echo " 🔗 [View Report](${{ env.PRE_SIGNED_URL }})" >> $GITHUB_STEP_SUMMARY
+                    echo " 🔗 [View Report](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
         
