@@ -63,14 +63,14 @@ jobs:
         run: |
               echo "<html><body><a href='${{ env.PRE_SIGNED_URL }}'>View Report</a></body></html>" > report-link.html
             
-      - name: Post Comment with Report Link
-        if: always()
+      - name: Add Comment to Pull Request
+        if: always() 
         uses: actions/github-script@v5
         with:
-              github-token: ${{secrets.G_TOKEN}}
-              script: |
+            github-token: ${{ secrets.G_TOKEN }}
+            script: |
                   const pull_request_number = context.payload.pull_request.number;
-                  const report_url = '${{ env.PRE_SIGNED_URL }}';
+                  const report_url = ${{ env.PRE_SIGNED_URL }};
                   const comment = `:sparkles: The report is available [here](${report_url}).`;
                   await github.rest.issues.createComment({
                     owner: context.repo.owner,
