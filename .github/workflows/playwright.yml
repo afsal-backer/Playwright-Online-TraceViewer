@@ -61,16 +61,17 @@ jobs:
       - name: Shorten Pre-Signed URL with Bitly
         if: always()
         env:
-          BITLY_TOKEN: ${{ secrets.BITLY_TOKEN }}
-          LONG_URL: ${{ env.PRE_SIGNED_URL }}
+            BITLY_TOKEN: ${{ secrets.BITLY_TOKEN }}
+            LONG_URL: ${{ env.PRE_SIGNED_URL }}
         run: |
+                      encoded_url=$(echo $LONG_URL | jq -sRr @uri)
                       response=$(curl -X POST 'https://api-ssl.bitly.com/v4/shorten' \
                       -H 'Authorization: Bearer ${BITLY_TOKEN}' \
                       -H 'Content-Type: application/json' \
-                      -d '{"long_url": "'${LONG_URL}'"}')
+                      -d '{"long_url": "'${encoded_url}'"}')
+                      echo "Bitly Response: $response" # Debugging line
                       shortened_url=$(echo $response | jq -r .link)
                       echo "SHORTENED_URL=$shortened_url" >> $GITHUB_ENV
-            
             
       - name: Create URL file
         if: always()
