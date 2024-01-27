@@ -69,15 +69,15 @@ jobs:
         with:
               github-token: ${{ secrets.G_TOKEN }}
               script: |
-                        const commit_sha = github.sha;
-                        const report_url = process.env.PRE_SIGNED_URL;
-                        const comment = `:sparkles: The report is available [here](${report_url}).`;
-                        await github.rest.repos.createCommitComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          commit_sha: commit_sha,
-                          body: comment
-                        });
+                      const commit_sha = context.sha;
+                      const report_url = process.env.PRE_SIGNED_URL;
+                      const comment = `:sparkles: The report is available [here](${report_url}).`;
+                      await github.rest.repos.createCommitComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        commit_sha: commit_sha, // Ensure this is not empty
+                        body: comment
+                      });
             
             
             
