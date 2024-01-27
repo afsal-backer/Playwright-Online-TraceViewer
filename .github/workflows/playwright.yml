@@ -66,7 +66,7 @@ jobs:
               script: |
                       const commit_sha = context.sha;
                       const report_url = process.env.PRE_SIGNED_URL;
-                      const comment = `🧪📊 Playwright Report [here](${report_url}).`;
+                      const comment = `🧪📊 Playwright Report [Open](${report_url}).`;
                       await github.rest.repos.createCommitComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
