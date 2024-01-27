@@ -50,7 +50,7 @@ jobs:
               echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
               aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
   
-      - name: Generate Pre-Signed URL for the report
+      - name: Generate Pre-Signed URL for the
         if: always()
         run: |
                     index_file="${{ env.REPORT_DIR }}/index.html"
@@ -66,7 +66,7 @@ jobs:
               script: |
                       const commit_sha = context.sha;
                       const report_url = process.env.PRE_SIGNED_URL;
-                      const comment = `:sparkles: 📌 Playwright Report [here](${report_url}).`;
+                      const comment = `🧪📊 Playwright Report [here](${report_url}).`;
                       await github.rest.repos.createCommitComment({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -85,5 +85,5 @@ jobs:
         if: always()
         run: |
                     echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-                    echo " 🔗 [View commit comment for the report]📝 (${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
+                    echo " 📮 [View commit comment for the report](${{ env.COMMIT_URL }})" >> $GITHUB_STEP_SUMMARY
         
