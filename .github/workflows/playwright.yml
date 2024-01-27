@@ -65,13 +65,15 @@ jobs:
             LONG_URL: ${{ env.PRE_SIGNED_URL }}
         run: |
                       encoded_url=$(echo $LONG_URL | jq -sRr @uri)
+                      json_body=$(jq -n --arg url "$encoded_url" '{"domain": "bit.ly", "long_url": $url}')
                       response=$(curl -X POST 'https://api-ssl.bitly.com/v4/shorten' \
-                      -H 'Authorization: Bearer ${BITLY_TOKEN}' \
+                      -H "Authorization: Bearer ${BITLY_TOKEN}" \
                       -H 'Content-Type: application/json' \
-                      -d '{"long_url": "'${encoded_url}'"}')
-                      echo "Bitly Response: $response" # Debugging line
+                      -d "$json_body")
+                      echo "Bitly Response: $response"
                       shortened_url=$(echo $response | jq -r .link)
                       echo "SHORTENED_URL=$shortened_url" >> $GITHUB_ENV
+            
             
       - name: Create URL file
         if: always()
