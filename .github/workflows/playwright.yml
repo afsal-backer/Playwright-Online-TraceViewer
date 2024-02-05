@@ -43,19 +43,13 @@ jobs:
               echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
               aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
   
-      - name: Generate Pre-Signed URLs for All Files in the Report Directory
+      - name: Generate Pre-Signed URL for the Report
         if: always()
-        env:
-            REPORT_DIR: playwright-report-${{ github.run_id }}
         run: |
-                    report_dir="s3://${{ vars.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}"
-                    urls=""
-                    while IFS= read -r file; do
-                      presigned_url=$(aws s3 presign "$report_dir/$file" --expires-in 300)
-                      urls+="$file: $presigned_url\n"
-                    done < <(aws s3 ls "$report_dir/" --recursive | awk '{print $4}')
-                    echo "PRE_SIGNED_URL=$urls" >> $GITHUB_ENV
-            
+              index_file="${{ env.REPORT_DIR }}/index.html"
+              presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
+              echo "Pre-Signed URL for index.html: $presigned_url"
+              echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
             
       - name: Add Comment to Commit
         if: always()
@@ -85,4 +79,3 @@ jobs:
         run: |
               echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
               echo " 📮 View commit [comment](${{ env.COMMIT_URL }}) for the report" >> $GITHUB_STEP_SUMMARY
-        
