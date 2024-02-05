@@ -43,38 +43,16 @@ jobs:
           echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
           aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
 
-      - name: Generate Pre-Signed URL for the Report
+
+      - name: Create URL file
         if: always()
         run: |
-          index_file="${{ env.REPORT_DIR }}/index.html"
-          presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
-          echo "Pre-Signed URL for index.html: $presigned_url"
-          echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
-
-      - name: Add Comment to Commit
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.G_TOKEN }}
-          script: |
-            const commit_sha = context.sha;
-            const report_url = process.env.PRE_SIGNED_URL;
-            const comment = `🧪📊 Playwright Report [Open](${report_url})`;
-            await github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: commit_sha, 
-              body: comment
-            });
-
-      - name: Construct Commit URL
-        if: always()
-        run: |
-          commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-          echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
-
+            REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
+            echo $REPORT_URL > url.txt
+            echo "Report URL: $REPORT_URL"
+  
       - name: Setup Job Summary
         if: always()
         run: |
-          echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-          echo " 📮 View commit [comment](${{ env.COMMIT_URL }}) for the report" >> $GITHUB_STEP_SUMMARY
+          REPORT_URL="https://${{ vars.AWS_S3_BUCKET }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ env.REPORT_DIR }}/index.html"
+          echo " 🧪 [View Playwright Report]($REPORT_URL) 🔗" >> $GITHUB_STEP_SUMMARY
