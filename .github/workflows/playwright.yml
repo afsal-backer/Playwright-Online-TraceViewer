@@ -5,8 +5,8 @@ name: Playwright Tests
       - main
 
 permissions:
-    id-token: write
-    contents: read
+  id-token: write
+  contents: read
 
 jobs:
   test:
@@ -40,83 +40,81 @@ jobs:
         env:
           REPORT_DIR: playwright-report-${{ github.run_id }}
         run: |
-              echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
-              aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
-  
+          echo "REPORT_DIR=$REPORT_DIR" >> $GITHUB_ENV
+          aws s3 cp playwright-report/. s3://${{ vars.AWS_S3_BUCKET }}/$REPORT_DIR --recursive
+
       - name: Generate Pre-Signed URL for the Report
         if: always()
         run: |
-              index_file="${{ env.REPORT_DIR }}/index.html"
-              presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
-              echo "Pre-Signed URL for index.html: $presigned_url"
-              echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
-            
+          index_file="${{ env.REPORT_DIR }}/index.html"
+          presigned_url=$(aws s3 presign "s3://${{ vars.AWS_S3_BUCKET }}/$index_file" --expires-in 300)
+          echo "Pre-Signed URL for index.html: $presigned_url"
+          echo "PRE_SIGNED_URL=$presigned_url" >> $GITHUB_ENV
+
       - name: Add Comment to Commit
         if: always()
         uses: actions/github-script@v7
         with:
-              github-token: ${{ secrets.G_TOKEN }}
-              script: |
-                      const commit_sha = context.sha;
-                      const report_url = process.env.PRE_SIGNED_URL;
-                      const comment = `🧪📊 Playwright Report [Open](${report_url})`;
-                      await github.rest.repos.createCommitComment({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        commit_sha: commit_sha, 
-                        body: comment
-                      });
-            
+          github-token: ${{ secrets.G_TOKEN }}
+          script: |
+            const commit_sha = context.sha;
+            const report_url = process.env.PRE_SIGNED_URL;
+            const comment = `🧪📊 Playwright Report [Open](${report_url})`;
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: commit_sha, 
+              body: comment
+            });
+
       - name: Construct Commit URL
         if: always()
         run: |
-              commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-              echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
-                    
-            
+          commit_url="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          echo "COMMIT_URL=$commit_url" >> $GITHUB_ENV
+
       - name: Setup Job Summary
         if: always()
         run: |
-              echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
-              echo " 📮 View commit [comment](${{ env.COMMIT_URL }}) for the report" >> $GITHUB_STEP_SUMMARY
+          echo "### Playwright Test Report" >> $GITHUB_STEP_SUMMARY
+          echo " 📮 View commit [comment](${{ env.COMMIT_URL }}) for the report" >> $GITHUB_STEP_SUMMARY
 
       - name: Generate Pre-Signed URLs for ZIP Files
         if: always()
         env:
-        REPORT_DIR: playwright-report-${{ github.run_id }}/data
+          REPORT_DIR: playwright-report-${{ github.run_id }}/data
         run: |
-                aws s3 ls "s3://${{ secrets.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}/" --recursive | grep '\.zip$' | awk '{print $4}' | while read -r file_path; do
-                  if [[ ! -z "$file_path" ]]; then
-                    presigned_url=$(aws s3 presign "s3://${{ secrets.AWS_S3_BUCKET }}/$file_path" --expires-in 300)
-                    echo "Pre-Signed URL for $file_path: $presigned_url"
-                    echo "::set-output name=presigned_url::$presigned_url"
-                  fi
-                done
+          aws s3 ls "s3://${{ secrets.AWS_S3_BUCKET }}/${{ env.REPORT_DIR }}/" --recursive | grep '\.zip$' | awk '{print $4}' | while read -r file_path; do
+            if [[ ! -z "$file_path" ]]; then
+              presigned_url=$(aws s3 presign "s3://${{ secrets.AWS_S3_BUCKET }}/$file_path" --expires-in 300)
+              echo "Pre-Signed URL for $file_path: $presigned_url"
+              echo "::set-output name=presigned_url::$presigned_url"
+            fi
+          done
         id: zip_presign
-      
-            
+
       - name: Add Comment to Commit with ZIP Pre-Signed URL
         if: always()
         uses: actions/github-script@v7
         with:
-        github-token: ${{ secrets.G_TOKEN }}
-        script: |
-                  const commit_sha = context.sha;
-                  const presigned_url = "${{ steps.zip_presign.outputs.presigned_url }}";
-                  const comment = presigned_url ? `🔒 ZIP File Access: [Download ZIP](${presigned_url})` : "No ZIP file found.";
-                  await github.rest.repos.createCommitComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    commit_sha: commit_sha, 
-                    body: comment
-                  });
-      
+          github-token: ${{ secrets.G_TOKEN }}
+          script: |
+            const commit_sha = context.sha;
+            const presigned_url = "${{ steps.zip_presign.outputs.presigned_url }}";
+            const comment = presigned_url ? `🔒 ZIP File Access: [Download ZIP](${presigned_url})` : "No ZIP file found.";
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: commit_sha, 
+              body: comment
+            });
+
       - name: Setup Job Summary with ZIP URL
         if: always()
         run: |
-                presigned_url="${{ steps.zip_presign.outputs.presigned_url }}"
-                if [ ! -z "$presigned_url" ]; then
-                  echo "### Additional Resources" >> $GITHUB_STEP_SUMMARY
-                  echo "- 🔒 [Download ZIP File]($presigned_url)" >> $GITHUB_STEP_SUMMARY
-                else
-                  echo "No ZIP file found." >> $GITHUB_STEP_SUMMARY
+          presigned_url="${{ steps.zip_presign.outputs.presigned_url }}"
+          if [ ! -z "$presigned_url" ]; then
+            echo "### Additional Resources" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔒 [Download ZIP File]($presigned_url)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No ZIP file found." >> $GITHUB_STEP_SUMMARY
